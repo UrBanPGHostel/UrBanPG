@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Urban PG Hostel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rich-black': '#0D1117',
+                        'slate-blue': '#7B68EE',
+                        'medium-purple-tint': '#9370DB',
+                        'text-primary': '#E5E7EB',
+                        'card-bg': '#1A202C',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* -------------- BASE + SCROLLBAR -------------- */
+        :root{
+            --accent1: #38bdf8;
+            --accent2: #7e22ce;
+            --neon: 0 0 18px rgba(126,34,206,0.22);
+            --neon-strong: 0 0 36px rgba(59,130,246,0.25);
+            --glass: rgba(255,255,255,0.03);
+        }
+        html,body{height:100%;background:#0B0F16;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#E5E7EB}
+        ::-webkit-scrollbar{width:10px}
+        ::-webkit-scrollbar-track{background:#0D1117}
+        ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent1),var(--accent2));border-radius:8px}
+        ::-webkit-scrollbar-thumb:hover{filter:brightness(1.05)}
+        *{box-sizing:border-box}
+
+        /* -------------- NAV underline (animated) -------------- */
+        .nav-underline {
+            position: absolute;
+            bottom: 8px;
+            height: 3px;
+            border-radius: 999px;
+            background: linear-gradient(90deg,var(--accent1),var(--accent2));
+            box-shadow: var(--neon);
+            transition: left .35s cubic-bezier(.2,.9,.2,1), width .35s cubic-bezier(.2,.9,.2,1), opacity .25s;
+            will-change: left, width;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* -------------- HERO TYPING & LINE (improved) -------------- */
+        .typing-text { font-weight:700; letter-spacing:0.2px; display:inline-block; white-space:nowrap; overflow:hidden; }
+        .typing-cursor { display:inline-block; width:3px; height:1.4em; background:linear-gradient(180deg,var(--accent1),var(--accent2)); margin-left:6px; vertical-align:middle; animation: blink 900ms steps(2) infinite; box-shadow: var(--neon-strong); border-radius:2px; }
+        @keyframes blink { 0%,50%{opacity:1}51%,100%{opacity:0.15} }
+
+        #line-draw-effect {
+            height:4px;
+            background: linear-gradient(90deg,var(--accent1),var(--accent2));
+            border-radius:999px;
+            width:0%;
+            box-shadow: var(--neon);
+            transition: width .6s cubic-bezier(.2,.9,.2,1);
+        }
+
+        /* -------------- STRONG ANIMATIONS: Reveal + Floating + Glow -------------- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(36px) scale(.98);
+            transition: opacity .65s cubic-bezier(.2,.9,.2,1), transform .65s cubic-bezier(.2,.9,.2,1);
+            will-change: opacity, transform;
+        }
+        .reveal.reveal-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Staggered children reveals */
+        .reveal-group > * { opacity:0; transform: translateY(28px); transition: all .6s cubic-bezier(.2,.9,.2,1); }
+        .reveal-group.reveal-visible > * { opacity:1; transform: translateY(0); }
+        .reveal-group.reveal-visible > *:nth-child(1){ transition-delay: .06s }
+        .reveal-group.reveal-visible > *:nth-child(2){ transition-delay: .12s }
+        .reveal-group.reveal-visible > *:nth-child(3){ transition-delay: .18s }
+        .reveal-group.reveal-visible > *:nth-child(4){ transition-delay: .24s }
+        .reveal-group.reveal-visible > *:nth-child(5){ transition-delay: .30s }
+
+        /* Floating strong */
+        .float-strong { transform-origin:center; animation: floaty 6s ease-in-out infinite; will-change: transform; }
+        .float-strong.alt { animation-duration:5.2s; animation-direction:reverse; }
+        @keyframes floaty {
+            0%{ transform: translateY(0) rotate(0.02deg) }
+            25%{ transform: translateY(-12px) rotate(-0.2deg) }
+            50%{ transform: translateY(0) rotate(0.02deg) }
+            75%{ transform: translateY(10px) rotate(0.12deg) }
+            100%{ transform: translateY(0) rotate(0.02deg) }
+        }
+
+        /* Strong glow on hover */
+        .glow-hover { transition: box-shadow .28s, transform .28s, filter .28s; }
+        .glow-hover:hover { box-shadow: 0 10px 40px rgba(126,34,206,0.28), 0 0 60px rgba(56,189,248,0.06); transform: translateY(-8px) scale(1.02); filter: saturate(1.06); }
+
+        /* Image parallax / 3D tilt on hover */
+        .parallax {
+            transform-style: preserve-3d;
+            transition: transform 260ms cubic-bezier(.2,.9,.2,1), box-shadow .26s;
+            will-change: transform;
+            perspective: 800px;
+        }
+        .parallax img {
+            transition: transform 350ms cubic-bezier(.2,.9,.2,1);
+            transform-origin: center;
+        }
+
+        /* strong zoom on gallery hover */
+        .gallery-hover:hover img { transform: scale(1.08) translateZ(0); filter: saturate(1.06); }
+
+        /* section title underline animation */
+        .title-underline {
+            height: 4px;
+            width: 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg,var(--accent1),var(--accent2));
+            box-shadow: var(--neon);
+            transition: width .85s cubic-bezier(.2,.9,.2,1);
+            margin: .6rem auto 0;
+        }
+
+        /* strong button pulse */
+        .btn-strong {
+            box-shadow: 0 8px 40px rgba(126,34,206,0.18), 0 0 18px rgba(56,189,248,0.04);
+            transition: transform .25s, box-shadow .25s;
+        }
+        .btn-strong:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 18px 60px rgba(126,34,206,0.28); }
+
+        /* helper small responsive tweaks */
+        @media (max-width: 768px) {
+            .nav-underline{ display:none; }
+            .float-strong{ animation-duration:5s }
+        }
+
+    </style>
+</head>
+<body class="bg-rich-black text-text-primary font-sans antialiased min-h-screen">
+
+    <header class="sticky top-0 z-50 frosted-header shadow-lg border-b border-slate-blue/30">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center relative">
+            <h1 class="text-2xl font-bold text-medium-purple-tint">Urban PG</h1>
+
+            <div class="hidden md:flex space-x-6 items-center relative">
+                <a href="#home" class="nav-link text-text-primary hover:text-slate-blue transition duration-300 relative group">Home</a>
+                <a href="#about" class="nav-link text-text-primary hover:text-slate-blue transition duration-300 relative group">About</a>
+                <a href="#rooms" class="nav-link text-text-primary hover:text-slate-blue transition duration-300 relative group">Rooms</a>
+                <a href="#gallery" class="nav-link text-text-primary hover:text-slate-blue transition duration-300 relative group">Gallery</a>
+                <a href="#testimonials" class="nav-link text-text-primary hover:text-slate-blue transition duration-300 relative group">Testimonials</a>
+                <a href="#contact" class="nav-link text-text-primary hover:text-slate-blue transition duration-300 relative group">Contact</a>
+                <a href="#location" class="nav-link text-text-primary hover:text-slate-blue transition duration-300 relative group">Location</a>
+
+                <a class="btn-strong inline-block px-4 py-2 text-white rounded-full ml-3"
+                   href="https://docs.google.com/forms/d/e/1FAIpQLSdbvmkFPYa_xyb2YnngxSIy7CI6drkRzLRDkx4qprcEPFcr1w/viewform?usp=pp_url"
+                   target="_blank"
+                   style="background:linear-gradient(90deg,var(--accent1),var(--accent2)); font-weight:700;">
+                   Book Now
+                </a>
+
+                
+            </div>
+
+            <button id="menu-button" class="md:hidden text-text-primary hover:text-slate-blue focus:outline-none">
+                <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </nav>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-rich-black border-t border-slate-blue/30 pb-4">
+            <a href="#home" onclick="closeMobileMenu()" class="block px-4 py-2 text-text-primary hover:bg-card-bg">Home</a>
+            <a href="#about" onclick="closeMobileMenu()" class="block px-4 py-2 text-text-primary hover:bg-card-bg">About</a>
+            <a href="#rooms" onclick="closeMobileMenu()" class="block px-4 py-2 text-text-primary hover:bg-card-bg">Rooms</a>
+            <a href="#gallery" onclick="closeMobileMenu()" class="block px-4 py-2 text-text-primary hover:bg-card-bg">Gallery</a>
+            <a href="#testimonials" onclick="closeMobileMenu()" class="block px-4 py-2 text-text-primary hover:bg-card-bg">Testimonials</a>
+            <a href="#contact" onclick="closeMobileMenu()" class="block px-4 py-2 text-text-primary hover:bg-card-bg">Contact</a>
+            <a href="#location" onclick="closeMobileMenu()" class="block px-4 py-2 text-text-primary hover:bg-card-bg">Location</a>
+            <a href="#booknow" onclick="closeMobileMenu()" class="block px-4 py-2 text-white bg-slate-blue hover:bg-medium-purple-tint mt-2 mx-4 rounded-lg text-center">Book Now</a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+      <section id="home" class="page-section min-h-[80vh] flex flex-col items-center justify-center text-center pt-20 pb-12 px-4 reveal" data-reveal>
+        <div class="w-full max-w-3xl space-y-6">
+          <h2 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight"
+              style="text-shadow: 0 6px 22px rgba(0,0,0,0.6);">
+            Your <span class="text-blue-400">Professional</span> Stay.
+            <br>
+            <div class="typing-container mt-4 mx-auto">
+              <span id="typing-hero" class="typing-text text-indigo-300"></span>
+              <span class="typing-cursor" id="typing-cursor"></span>
+              <div id="line-draw-effect" class="mt-4"></div>
+              
+            </div>
+          </h2>
+
+          <p class="text-base sm:text-lg text-gray-300 leading-relaxed px-2 reveal" data-reveal>
+            Experience premium facilities designed for students and working professionals.
+          </p>
+
+          <a href="#booknow"
+             class="inline-block px-6 sm:px-8 py-3 text-white font-semibold rounded-full shadow-lg 
+             bg-gradient-to-r from-sky-400 to-purple-600 
+             hover:from-sky-500 hover:to-purple-700 
+             transition duration-300 transform hover:scale-105 mt-4 btn-strong reveal float-strong">
+            Start Your Stay
+          </a>
+        </div>
+      </section>
+
+      <hr class="border-t border-blue-400/30 my-12 reveal" data-reveal>
+
+      <section id="rooms" class="page-section pt-12 pb-16 reveal-group" data-reveal>
+        <h2 class="text-4xl font-bold text-slate-blue mb-10 border-b-2 border-medium-purple-tint pb-2 text-center">Our Premium Rooms</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-card-bg rounded-xl overflow-hidden transform transition duration-300 border border-slate-blue/30 parallax glow-hover reveal" data-reveal>
+                <img src="https://risingstarhostel.com/wp-content/uploads/2024/03/PRB_5847-scaled.jpg" alt="Single Occupancy Room" class="w-full h-48 object-cover object-center parallax-img">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold text-medium-purple-tint mb-2">Single Executive</h3>
+                    <p class="text-gray-400 mb-4">Maximum privacy and comfort for focused study or work. Includes attached washroom.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li class="flex items-center"><i data-lucide="maximize-2" class="w-4 h-4 mr-2 text-slate-blue"></i> Spacious Area</li>
+                        <li class="flex items-center"><i data-lucide="monitor" class="w-4 h-4 mr-2 text-slate-blue"></i> Dedicated Desk</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-card-bg rounded-xl overflow-hidden transform transition duration-300 border border-slate-blue/30 parallax glow-hover reveal" data-reveal>
+                <img src="https://photos.spotahome.com/fsobscale_1600_900_nonverified_ur_15_50/bf7f806a4320797d11e14a539667cdde22d1a503f4ddcf8b747fd8b1.webp" alt="Double Occupancy Room" class="w-full h-48 object-cover object-center parallax-img">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold text-medium-purple-tint mb-2">Double Sharing</h3>
+                    <p class="text-gray-400 mb-4">Ideal for friends or colleagues. Balanced privacy and collaborative living space.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li class="flex items-center"><i data-lucide="user-check" class="w-4 h-4 mr-2 text-slate-blue"></i> Two Beds & Lockers</li>
+                        <li class="flex items-center"><i data-lucide="coffee" class="w-4 h-4 mr-2 text-slate-blue"></i> Common Area Access</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-card-bg rounded-xl overflow-hidden transform transition duration-300 border border-slate-blue/30 parallax glow-hover reveal" data-reveal>
+                <img src="https://risingstarhostel.com/wp-content/uploads/2025/05/Copy-of-PRB_1205-scaled.jpg" alt="Triple Occupancy Room" class="w-full h-48 object-cover object-center parallax-img">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold text-medium-purple-tint mb-2">Triple Standard</h3>
+                    <p class="text-gray-400 mb-4">Cost-effective and social, perfect for group living without compromising comfort.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li class="flex items-center"><i data-lucide="users" class="w-4 h-4 mr-2 text-slate-blue"></i> Group Friendly</li>
+                        <li class="flex items-center"><i data-lucide="wifi" class="w-4 h-4 mr-2 text-slate-blue"></i> High-Speed Wi-Fi</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="facilities" class="pt-12 reveal-group" data-reveal>
+            <h3 class="text-3xl font-bold text-white mb-8 border-b border-medium-purple-tint/50 pb-2 text-center">Hostel Facilities </h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 text-center">
+                <div class="p-5 bg-card-bg rounded-xl shadow-lg border border-slate-blue/20 flex flex-col items-center hover:bg-rich-black transition duration-300 glow-hover parallax float-strong">
+                    <i data-lucide="wifi" class="w-8 h-8 text-slate-blue mb-3"></i>
+                    <p class="text-sm font-medium text-gray-300">High-Speed Wi-Fi</p>
+                </div>
+                <div class="p-5 bg-card-bg rounded-xl shadow-lg border border-slate-blue/20 flex flex-col items-center hover:bg-rich-black transition duration-300 glow-hover parallax float-strong alt">
+                    <i data-lucide="utility-pole" class="w-8 h-8 text-slate-blue mb-3"></i>
+                    <p class="text-sm font-medium text-gray-300">24/7 Power Backup</p>
+                </div>
+                <div class="p-5 bg-card-bg rounded-xl shadow-lg border border-slate-blue/20 flex flex-col items-center hover:bg-rich-black transition duration-300 glow-hover parallax float-strong">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-slate-blue mb-3"></i>
+                    <p class="text-sm font-medium text-gray-300">24/7 Security</p>
+                </div>
+                <div class="p-5 bg-card-bg rounded-xl shadow-lg border border-slate-blue/20 flex flex-col items-center hover:bg-rich-black transition duration-300 glow-hover parallax float-strong alt">
+                    <i data-lucide="chef-hat" class="w-8 h-8 text-slate-blue mb-3"></i>
+                    <p class="text-sm font-medium text-gray-300">Nutritious Meals</p>
+                </div>
+                <div class="p-5 bg-card-bg rounded-xl shadow-lg border border-slate-blue/20 flex flex-col items-center hover:bg-rich-black transition duration-300 glow-hover parallax float-strong">
+                    <i data-lucide="washing-machine" class="w-8 h-8 text-slate-blue mb-3"></i>
+                    <p class="text-sm font-medium text-gray-300">Laundry Service</p>
+                </div>
+                <div class="p-5 bg-card-bg rounded-xl shadow-lg border border-slate-blue/20 flex flex-col items-center hover:bg-rich-black transition duration-300 glow-hover parallax float-strong alt">
+                    <i data-lucide="sun" class="w-8 h-8 text-slate-blue mb-3"></i>
+                    <p class="text-sm font-medium text-gray-300">Hot Water</p>
+                </div>
+                <div class="p-5 bg-card-bg rounded-xl shadow-lg border border-slate-blue/20 flex flex-col items-center hover:bg-rich-black transition duration-300 glow-hover parallax float-strong">
+                    <i data-lucide="hand-platter" class="w-8 h-8 text-slate-blue mb-3"></i>
+                    <p class="text-sm font-medium text-gray-300">Housekeeping</p>
+                </div>
+                <div class="p-5 bg-card-bg rounded-xl shadow-lg border border-slate-blue/20 flex flex-col items-center hover:bg-rich-black transition duration-300 glow-hover parallax float-strong alt">
+                    <i data-lucide="thermometer" class="w-8 h-8 text-slate-blue mb-3"></i>
+                    <p class="text-sm font-medium text-gray-300">Air Conditioning</p>
+                </div>
+                <div class="p-5 bg-card-bg rounded-xl shadow-lg border border-slate-blue/20 flex flex-col items-center hover:bg-rich-black transition duration-300 glow-hover parallax float-strong">
+                    <i data-lucide="dumbbell" class="w-8 h-8 text-slate-blue mb-3"></i>
+                    <p class="text-sm font-medium text-gray-300">Gym Access</p>
+                </div>
+                <div class="p-5 bg-card-bg rounded-xl shadow-lg border border-slate-blue/20 flex flex-col items-center hover:bg-rich-black transition duration-300 glow-hover parallax float-strong alt">
+                    <i data-lucide="car" class="w-8 h-8 text-slate-blue mb-3"></i>
+                    <p class="text-sm font-medium text-gray-300">Vehicle Parking</p>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      <hr class="border-t border-slate-blue/30 my-12 reveal" data-reveal>
+
+     <section id="gallery" class="page-section pt-12 pb-16">
+            <h2 class="text-4xl font-bold text-slate-blue mb-10 border-b-2 border-medium-purple-tint pb-2 text-center">Hostel Gallery & Environment</h2>
+            <p class="text-center text-gray-400 mb-8">A look inside our clean, modern, and supportive co-living spaces.</p>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <img src="https://t4.ftcdn.net/jpg/06/32/19/49/240_F_632194988_bmP71h6PQ5sN8zAlseTjYYNSo65kcwwj.jpg" alt="Study Lounge" class="w-full h-auto aspect-video object-cover rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-medium-purple-tint/50 cursor-pointer">
+                <img src="https://t4.ftcdn.net/jpg/05/91/16/83/240_F_591168316_TrDtGurY5Qnvme8SJ3wWkI055c0zkkmh.jpg" alt="Modern Kitchen" class="w-full h-auto aspect-video object-cover rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-medium-purple-tint/50 cursor-pointer">
+                <img src="https://t3.ftcdn.net/jpg/12/03/25/64/240_F_1203256470_IYKP3tDuswcNeYvNFuMZqZBGmoX6kxol.jpg" alt="Clean Washrooms" class="w-full h-auto aspect-video object-cover rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-medium-purple-tint/50 cursor-pointer">
+                <img src="https://t4.ftcdn.net/jpg/10/82/87/91/240_F_1082879127_gE94q9hJ1jhNkwtY585HEb3kSzLnYskb.jpg" alt="Common Area" class="w-full h-auto aspect-video object-cover rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-medium-purple-tint/50 cursor-pointer">
+                <img src="https://t3.ftcdn.net/jpg/07/24/05/62/240_F_724056257_1DQxl7vAJXB37CE34XcgGH9fgKoCyv2O.jpg" alt="Building Exterior" class="w-full h-auto aspect-video object-cover rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-medium-purple-tint/50 cursor-pointer">
+                <img src="https://as2.ftcdn.net/v2/jpg/12/97/07/11/1000_F_1297071163_bAGLdcjQ8PQwPv9LqCoDX98WrwF5PEsN.jpg" alt="Security Check" class="w-full h-auto aspect-video object-cover rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-medium-purple-tint/50 cursor-pointer">
+                <img src="https://as1.ftcdn.net/v2/jpg/10/82/73/70/1000_F_1082737013_A7n71FCOcNgjka9PYoHb8WDfIbR7T1ZA.jpg" alt="Mess Hall" class="w-full h-auto aspect-video object-cover rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-medium-purple-tint/50 cursor-pointer">
+                <img src="https://as1.ftcdn.net/v2/jpg/09/97/63/00/1000_F_997630045_1A6Zazv4zQFWbAtVANtHiBWr2fOXkquV.jpg" alt="Reading Book" class="w-full h-auto aspect-video object-cover rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-medium-purple-tint/50 cursor-pointer">
+            </div>
+        </section>
+        
+        <!-- Horizontal Divider -->
+        <hr class="border-t border-slate-blue/30 my-12">
+
+
+      <section id="testimonials" class="page-section pt-12 pb-16 reveal-group" data-reveal>
+        <h2 class="text-4xl font-bold text-slate-blue mb-10 border-b-2 border-medium-purple-tint pb-2 text-center">FeedBack</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="p-6 bg-card-bg rounded-xl shadow-2xl border border-medium-purple-tint/30 space-y-4 parallax glow-hover reveal" data-reveal>
+                <div class="flex text-yellow-400 space-x-1">
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                </div>
+                <p class="text-gray-300 italic">"The best decision I made for my studies. The high-speed internet and quiet environment are perfect for productivity. Highly recommended for professionals!"</p>
+                <div class="font-semibold text-slate-blue">- Kunal S. (Student)</div>
+            </div>
+
+            <div class="p-6 bg-card-bg rounded-xl shadow-2xl border border-medium-purple-tint/30 space-y-4 parallax glow-hover reveal" data-reveal>
+                <div class="flex text-yellow-400 space-x-1">
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star-half" class="w-5 h-5 fill-current"></i>
+                </div>
+                <p class="text-gray-300 italic">"Cleanliness is top-notch, and the meals are surprisingly good. It feels much safer and more organized than other PGs I've stayed in."</p>
+                <div class="font-semibold text-slate-blue">- Abhishek P. (Working Professional)</div>
+            </div>
+
+            <div class="p-6 bg-card-bg rounded-xl shadow-2xl border border-medium-purple-tint/30 space-y-4 parallax glow-hover reveal" data-reveal>
+                <div class="flex text-yellow-400 space-x-1">
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                </div>
+                <p class="text-gray-300 italic">"The management is very responsive. Any small issue is handled quickly. The proximity to transport hubs is a major plus point for me."</p>
+                <div class="font-semibold text-slate-blue">- Akash W. (IT Consultant)</div>
+            </div>
+        </div>
+      </section>
+
+      <hr class="border-t border-slate-blue/30 my-12 reveal" data-reveal>
+
+      <section id="location" class="page-section pt-12 pb-16 reveal" data-reveal>
+        <h2 class="text-4xl font-bold text-slate-blue mb-8 text-center">Our Location</h2>
+        <p class="text-center text-gray-400 mb-6">Find us easily via the interactive map below.</p>
+        <div class="h-[60vh] bg-card-bg rounded-xl shadow-2xl overflow-hidden border border-slate-blue/30 relative flex items-center justify-center parallax">
+            <div id="location-loading" class="absolute inset-0 flex items-center justify-center bg-rich-black z-10">
+                <div class="spinner"></div>
+            </div>
+            <iframe id="location-iframe" src="https://maps.google.com/maps?q=Urban%20PG%20Hostel&t=&z=13&ie=UTF8&iwloc=&output=embed&url=https://maps.app.goo.gl/cG1bsbw4QRSzNPDm9" class="w-full h-full border-0" allowfullscreen="" loading="lazy" onerror="this.style.display='none'; document.getElementById('location-fallback').style.display='block';" onload="document.getElementById('location-loading').style.display='none';"></iframe>
+            <div id="location-fallback" class="absolute inset-0 bg-rich-black text-center p-8 hidden">
+                <p class="text-lg text-red-400">Map failed to load. Use direct link:</p>
+                <a href="https://maps.app.goo.gl/cG1bsbw4QRSzNPDm9" target="_blank" class="mt-4 inline-block text-slate-blue underline hover:text-medium-purple-tint">View Location on Google Maps</a>
+            </div>
+        </div>
+      </section>
+
+      <hr class="border-t border-slate-blue/30 my-12 reveal" data-reveal>
+
+      <section id="contact" class="page-section pt-12 pb-16 reveal" data-reveal>
+        <h2 class="text-4xl font-bold text-slate-blue mb-10 text-center">Get In Touch</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="p-6 bg-card-bg rounded-xl shadow-2xl text-center border border-medium-purple-tint/30 parallax glow-hover">
+                <i data-lucide="message-square-text" class="w-10 h-10 mx-auto text-slate-blue mb-4"></i>
+                <h3 class="text-2xl font-semibold text-white mb-2">WhatsApp</h3>
+                <p class="text-gray-400 mb-4">Quickest response time for booking inquiries.</p>
+                <a href="https://wa.me/919518516331" target="_blank" class="inline-flex items-center bg-green-500 text-white px-4 py-2 rounded-full font-medium hover:bg-green-600 transition duration-300 transform hover:scale-105">
+                    <i data-lucide="whatsapp" ></i> +91 9518516331
+                </a>
+            </div>
+
+            <div class="p-6 bg-card-bg rounded-xl shadow-2xl text-center border border-medium-purple-tint/30 parallax glow-hover">
+                <i data-lucide="mail" class="w-10 h-10 mx-auto text-slate-blue mb-4"></i>
+                <h3 class="text-2xl font-semibold text-white mb-2">Email</h3>
+                <p class="text-gray-400 mb-4">For detailed documentation or formal queries.</p>
+                <a href="mailto:urbanpghostel@gmail.com" class="inline-flex items-center bg-medium-purple-tint text-white px-4 py-2 rounded-full font-medium hover:bg-slate-blue transition duration-300 transform hover:scale-105">
+                    <i data-lucide="mail-open" class="w-5 h-5 mr-2"></i> Send Email
+                </a>
+                <p class="text-xs text-gray-500 mt-2">urbanpghostel@gmail.com</p>
+            </div>
+
+            <div class="p-6 bg-card-bg rounded-xl shadow-2xl text-center border border-medium-purple-tint/30 parallax glow-hover">
+                <i data-lucide="users-2" class="w-10 h-10 mx-auto text-slate-blue mb-4"></i>
+                <h3 class="text-2xl font-semibold text-white mb-2">Social Connect</h3>
+                <p class="text-gray-400 mb-4">Follow us for updates and community stories.</p>
+                <div class="flex justify-center space-x-4">
+                    <a href="https://www.instagram.com/urbanpghostel?igsh=ZGJtemwwamt2aHZr" target="_blank" class="text-medium-purple-tint hover:text-slate-blue transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                    </a>
+                    <a href="https://t.me/KunalShingote0454" target="_blank" class="text-medium-purple-tint hover:text-slate-blue transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 19-3-8-2-2-8-3z"/><path d="M22 2 11 13"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      <hr class="border-t border-slate-blue/30 my-12 reveal" data-reveal>
+
+      <!-- ABOUT Section -->
+<section id="about" class="page-section pt-12 pb-16 px-4 sm:px-6 lg:px-8">
+  <h2 class="text-3xl sm:text-4xl font-bold text-slate-blue mb-6 sm:mb-8 border-b-2 border-medium-purple-tint pb-2 text-center sm:text-left">
+    About Urban PG Hostel
+  </h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 items-center">
+    
+    <!-- Text Section -->
+    <div class="space-y-5 sm:space-y-6 text-gray-300 text-base sm:text-lg leading-relaxed">
+      <p>
+        Urban PG Hostel is designed to be more than just accommodation; 
+        it's a professional and supportive co-living community.
+        We focus on providing a seamless living experience for students and young professionals by combining modern amenities with a safe, clean, and productive environment.
+      </p>
+      <p>
+        Our mission is to eliminate the daily stresses of city living, allowing our residents to focus entirely on their careers and studies. 
+        From high-speed internet to nutritious meals, every detail is managed with professionalism and care.
+      </p>
+      <p class="text-medium-purple-tint font-semibold">
+        We believe a great living space is the foundation of success.
+      </p>
+    </div>
+
+
+    <!-- Card Section -->
+    <div class="p-5 sm:p-6 rounded-xl bg-card-bg shadow-2xl border border-medium-purple-tint/20">
+      <h3 class="text-2xl font-semibold text-white mb-4 text-center sm:text-left">
+        Our Commitment
+      </h3>
+      <ul class="space-y-3 text-gray-400 text-sm sm:text-base">
+        <li class="flex items-start">
+          <i data-lucide="check-circle" class="w-5 h-5 mr-2 text-slate-blue flex-shrink-0"></i> 
+          24/7 Security and Support
+        </li>
+        <li class="flex items-start">
+          <i data-lucide="check-circle" class="w-5 h-5 mr-2 text-slate-blue flex-shrink-0"></i> 
+          High Standards of Cleanliness
+        </li>
+        <li class="flex items-start">
+          <i data-lucide="check-circle" class="w-5 h-5 mr-2 text-slate-blue flex-shrink-0"></i> 
+          Community and Networking Focus
+        </li>
+        <li class="flex items-start">
+          <i data-lucide="check-circle" class="w-5 h-5 mr-2 text-slate-blue flex-shrink-0"></i> 
+          Transparent and Easy Booking
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+          
+
+    </main>
+
+    <footer class="bg-card-bg border-t border-slate-blue/30 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
+            <p>© <span id="year"></span> Urban PG Hostel. All rights reserved.</p>
+            <div class="mt-4 flex justify-center space-x-6">
+                <a href="https://wa.me/919518516331" target="_blank" class="text-gray-400 hover:text-green-500 transition duration-300" aria-label="WhatsApp"><i data-lucide="whatsapp" class="w-6 h-6"></i></a>
+                <a href="mailto:urbanpghostel@gmail.com" class="text-gray-400 hover:text-slate-blue transition duration-300" aria-label="Email"><i data-lucide="mail" class="w-6 h-6"></i></a>
+                <a href="https://www.instagram.com/urbanpghostel?igsh=ZGJtemwwamt2aHZr" target="_blank" class="text-gray-400 hover:text-medium-purple-tint transition duration-300" aria-label="Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                </a>
+                <a href="https://t.me/KunalShingote0454" target="_blank" class="text-gray-400 hover:text-blue-400 transition duration-300" aria-label="Telegram"><i data-lucide="send" class="w-6 h-6"></i></a>
+            
+            
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .spinner{ border:4px solid rgba(255,255,255,0.06); border-left-color: #7B68EE; border-radius:50%; width:44px; height:44px; animation: spin 950ms linear infinite; }
+        @keyframes spin{ to{ transform:rotate(360deg) } }
+    </style>
+
+    <script>
+        // Set footer year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Initialize icons
+        document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
+
+        // ------------------ MOBILE MENU ------------------
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+            }
+        }
+        document.getElementById('menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            mobileMenu.classList.toggle('hidden');
+            if (mobileMenu.classList.contains('hidden')) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+            }
+        });
+
+        // ------------------ TYPING (improved) ------------------
+        (function startTyping(){
+            const el = document.getElementById('typing-hero');
+            const cursor = document.getElementById('typing-cursor');
+            const line = document.getElementById('line-draw-effect');
+            const phrases = [' Welcome Home.', 'Fast Wi-Fi.',' Prime Location.    ', 'Flexible Payment.'];
+            let p = 0, i = 0, forward = true;
+
+            function typeLoop(){
+                const current = phrases[p];
+                if (forward){
+                    if (i <= current.length) {
+                        el.textContent = current.slice(0,i);
+                        i++;
+                        setTimeout(typeLoop, 60);
+                    } else {
+                        forward = false;
+                        line.style.width = '100%';
+                        setTimeout(typeLoop, 900);
+                    }
+                } else {
+                    if (i >= 0) {
+                        el.textContent = current.slice(0,i);
+                        i--;
+                        setTimeout(typeLoop, 28);
+                    } else {
+                        forward = true;
+                        p = (p + 1) % phrases.length;
+                        line.style.width = '0%';
+                        setTimeout(typeLoop, 300);
+                    }
+                }
+            }
+            // start after small delay for dramatic effect
+            setTimeout(typeLoop, 450);
+        })();
+
+        // ------------------ NAV UNDERLINE (animated) ------------------
+        (function navUnderline(){
+            const nav = document.querySelector('nav');
+            const links = Array.from(nav.querySelectorAll('a.nav-link'));
+            const underline = document.getElementById('navUnderline');
+
+            function placeUnderline(target){
+                if(!target){ underline.style.opacity = 0; return; }
+                const rect = target.getBoundingClientRect();
+                const parentRect = nav.getBoundingClientRect();
+                underline.style.left = (rect.left - parentRect.left) + 'px';
+                underline.style.width = rect.width + 'px';
+                underline.style.opacity = 1;
+            }
+
+            links.forEach(a=>{
+                a.addEventListener('mouseenter', e => placeUnderline(e.target));
+                a.addEventListener('click', e => { links.forEach(x=>x.classList.remove('active')); e.target.classList.add('active'); placeUnderline(e.target); });
+            });
+
+            // set initial (Home)
+            window.addEventListener('load', () => {
+                const active = nav.querySelector('a.active') || links[0];
+                placeUnderline(active);
+            });
+
+            // hide underline if mouse leaves nav area
+            nav.addEventListener('mouseleave', () => {
+                const active = nav.querySelector('a.active') || links[0];
+                placeUnderline(active);
+            });
+        })();
+
+        // ------------------ REVEAL ON SCROLL ------------------
+        (function revealOnScroll(){
+            const revealElements = document.querySelectorAll('[data-reveal]');
+            const revealGroups = document.querySelectorAll('.reveal-group');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting){
+                        entry.target.classList.add('reveal-visible');
+                        // also add class .reveal-visible to trigger transitions defined in CSS
+                        entry.target.classList.add('reveal-visible');
+                        // if element is a group, add class to children
+                        if(entry.target.classList.contains('reveal-group')){
+                            entry.target.classList.add('reveal-visible');
+                            const children = Array.from(entry.target.children);
+                            children.forEach((c, idx) => { c.style.transitionDelay = (idx * 80) + 'ms'; c.classList.add('reveal-visible'); });
+                        }
+                    }
+                });
+            }, { threshold: 0.18 });
+
+            revealElements.forEach(el => observer.observe(el));
+            revealGroups.forEach(g => observer.observe(g));
+        })();
+
+        // ------------------ PARALLAX / 3D TILT for images/cards ------------------
+        (function parallaxHover(){
+            const parallaxItems = document.querySelectorAll('[data-parallax]');
+            parallaxItems.forEach(item => {
+                const img = item.querySelector('img.parallax-img');
+                item.addEventListener('mousemove', (e) => {
+                    const rect = item.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    const tiltX = (y * 10) * -1;
+                    const tiltY = (x * 14);
+                    item.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateZ(0) scale(1.01)`;
+                    if(img) img.style.transform = `translateZ(30px) scale(1.02)`;
+                });
+                item.addEventListener('mouseleave', () => {
+                    item.style.transform = '';
+                    if(img) img.style.transform = '';
+                });
+                item.addEventListener('mouseenter', () => {
+                    item.style.transition = 'transform 260ms cubic-bezier(.2,.9,.2,1)';
+                    if(img) img.style.transition = 'transform 320ms cubic-bezier(.2,.9,.2,1)';
+                });
+            });
+        })();
+
+        // ------------------ SMALL PERFORMANCE: Reduce motion for prefers-reduced-motion ------------------
+        (function respectReducedMotion(){
+            const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+            if(mq && mq.matches){
+                // remove animations and transitions that may be problematic
+                document.querySelectorAll('.float-strong, .parallax, .gallery-hover, .glow-hover').forEach(el=>{
+                    el.style.animation = 'none';
+                    el.style.transition = 'none';
+                });
+            }
+        })();
+
+        // ------------------ small helper: animate title underlines ------------------
+        (function titleUnderline(){
+            const sections = document.querySelectorAll('section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const underline = entry.target.querySelector('[data-underline], .title-underline');
+                    if(!underline) return;
+                    if(entry.isIntersecting){
+                        underline.style.width = '180px';
+                    } else {
+                        underline.style.width = '0';
+                    }
+                });
+            }, { threshold: 0.28 });
+            sections.forEach(s => observer.observe(s));
+        })();
+
+        // ------------------ tiny enhancement: make links with hash smooth scroll offset (accounting header) ------------------
+        (function smoothHashScroll(){
+            document.querySelectorAll('a[href^="#"]').forEach(a=>{
+                a.addEventListener('click', function(e){
+                    const href = this.getAttribute('href');
+                    if(!href || href.length < 2) return;
+                    const id = href.slice(1);
+                    const el = document.getElementById(id);
+                    if(el){
+                        e.preventDefault();
+                        const offset = 86; // header height approx
+                        const top = el.getBoundingClientRect().top + window.scrollY - offset;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                });
+            });
+        })();
+
+    </script>
+</body>
+</html>
