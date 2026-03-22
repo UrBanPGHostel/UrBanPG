@@ -376,16 +376,34 @@
 
       <section id="location" class="page-section pt-12 pb-16 reveal" data-reveal>
         <h2 class="text-4xl font-bold text-slate-blue mb-8 text-center">Our Location</h2>
-        <p class="text-center text-gray-400 mb-6">Find us easily via the interactive map below.</p>
-        <div class="h-[60vh] bg-card-bg rounded-xl shadow-2xl overflow-hidden border border-slate-blue/30 relative flex items-center justify-center parallax">
-            <div id="location-loading" class="absolute inset-0 flex items-center justify-center bg-rich-black z-10">
-                <div class="spinner"></div>
-            </div>
-            <iframe id="location-iframe" src="https://maps.app.goo.gl/uy4f9uuWMKbDM3Gu9" class="w-full h-full border-0" allowfullscreen="" loading="lazy" onerror="this.style.display='none'; document.getElementById('location-fallback').style.display='block';" onload="document.getElementById('location-loading').style.display='none';"></iframe>
-            <div id="location-fallback" class="absolute inset-0 bg-rich-black text-center p-8 hidden">
-                <p class="text-lg text-red-400">Map failed to load. Use direct link:</p>
-                <a href="https://maps.app.goo.gl/cG1bsbw4QRSzNPDm9" target="_blank" class="mt-4 inline-block text-slate-blue underline hover:text-medium-purple-tint">View Location on Google Maps</a>
-            </div>
+        <p class="text-center text-gray-400 mb-6">
+    Find us easily via the interactive map below.
+</p>
+
+<div class="h-[60vh] bg-card-bg rounded-xl shadow-2xl overflow-hidden border border-slate-blue/30 relative flex items-center justify-center parallax">
+    
+    <div id="location-loading" class="absolute inset-0 flex items-center justify-center bg-rich-black z-10">
+        <div class="spinner"></div>
+    </div>
+
+    <iframe 
+        id="location-iframe"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.307927497!2d73.8293547!3d18.5333655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bf70f017edc9%3A0xd6655732fc01dac2!2sShivajinagar%20PG%20%26%20Hostel%20%E2%80%93%20UrBan%20PG!5e0!3m2!1sen!2sin!4v1710000000000"
+        class="w-full h-full border-0"
+        allowfullscreen=""
+        loading="lazy"
+        onload="document.getElementById('location-loading').style.display='none';"
+        onerror="this.style.display='none'; document.getElementById('location-fallback').style.display='flex';">
+    </iframe>
+
+    <div id="location-fallback" class="absolute inset-0 bg-rich-black text-center p-8 hidden items-center justify-center flex-col">
+        <p class="text-lg text-red-400">
+            Map failed to load. Use direct link:
+        </p>
+        <a href="https://maps.app.goo.gl/cG1bsbw4QRSzNPDm9" target="_blank" class="mt-4 inline-block text-slate-blue underline hover:text-medium-purple-tint">
+            View Location on Google Maps
+        </a>
+    </div>
         </div>
       </section>
 
